@@ -1,13 +1,3 @@
-// var content = require("./data");
-// console.log(123);
-
-// var a = 3;
-// a++;
-
-// console.log("a = ", a);
-// console.log(content.data3);
-// console.log(content);
-
 var http = require("http");
 http.createServer(function (request, response) {
     console.log(request);
