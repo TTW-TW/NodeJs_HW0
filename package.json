@@ -1,9 +1,9 @@
 {
     "name": "nodejs_hw0",
     "version": "1.0.0",
-    "main": "server.js",
+    "main": "service.js",
     "scripts": {
-        "start": "node server.js",
+        "start": "node service.js",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "author": "",
