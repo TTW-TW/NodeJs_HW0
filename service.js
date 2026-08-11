@@ -7,7 +7,7 @@ const { v4: uuidv4 } = require("uuid");
 // 自己寫的模組
 const errorHandle = require("./errorHandle");
 
-// 清單資料，會存在 npm 記憶體，關掉才會更新
+// 清單資料，會存在 npm 記憶體，關掉或異動 code 會更新
 let todos = [];
 
 const requestListener = (req, res) => {
@@ -29,7 +29,9 @@ const requestListener = (req, res) => {
     });
 
     // 測試驗證是否從指定 {網址來源}'(例如首頁)，以及請求 method
-    // GET
+    // ============================================
+    // GET - 取得整個清單
+    // ============================================
     // 設定路由
     if (req.url == "/todos" && req.method == "GET") {
         res.writeHead(200, headers);
@@ -40,8 +42,10 @@ const requestListener = (req, res) => {
             }),
         );
         res.end();
-        // POST
     } else if (req.url == "/todos" && req.method == "POST") {
+        // ============================================
+        // POST - 新增一筆代辦
+        // ============================================
         // 接收結束之後解析
         req.on("end", () => {
             // 避免吃到錯誤格式導致程式崩潰，要寫 try catch 結構
@@ -75,15 +79,16 @@ const requestListener = (req, res) => {
                     errorHandle(res, errorMessage);
                 }
             } catch (error) {
-                // console.log("程式錯誤，原因：", error);
+                console.log("程式錯誤，原因：", error);
                 // 錯誤要回傳 400 代碼，不能回傳 200
                 const errorMessage = "唷同學，欄位未填寫正確，或無此 todo id";
                 errorHandle(res, errorMessage);
             }
         });
-
-        // DELETE
     } else if (req.url == "/todos" && req.method == "DELETE") {
+        // ============================================
+        // DELETE - 刪除整個清單
+        // ============================================
         res.writeHead(200, headers);
         // 清空 todos 陣列
         todos.length = 0;
@@ -95,6 +100,9 @@ const requestListener = (req, res) => {
         );
         res.end();
     } else if (req.url.startsWith("/todos/") && req.method == "DELETE") {
+        // ============================================
+        // DELETE - 刪除指定代辦
+        // ============================================
         // 取得 id
         // const id = req.url.split("/")[req.url.split("/").length - 1];
         const id = req.url.split("/").pop();
@@ -119,7 +127,9 @@ const requestListener = (req, res) => {
             res.end();
         }
     } else if (req.url.startsWith("/todos/") && req.method == "PATCH") {
-        // PATCH 更新資料
+        // ============================================
+        // PATCH 更新指定資料
+        // ============================================
         // 接收結束之後解析
         req.on("end", () => {
             // 避免吃到錯誤格式導致程式崩潰，要寫 try catch 結構
@@ -127,15 +137,14 @@ const requestListener = (req, res) => {
             try {
                 // 先確認是否有戴 title 屬性
                 const todo = JSON.parse(body).title;
-                console.log("有檢察 title");
                 if (todo !== undefined && todo.length > 0) {
                     // 解析 id 與 index
                     const id = req.url.split("/").pop();
                     const index = todos.findIndex(
                         (element) => element.id == id,
                     );
-                    console.log("id = ", id);
-                    console.log("index = ", index);
+                    // console.log("id = ", id);
+                    // console.log("index = ", index);
 
                     // 檢查 id 是否存在
                     if (index !== -1) {
@@ -160,16 +169,15 @@ const requestListener = (req, res) => {
                     errorHandle(res, errorMessage);
                 }
             } catch (error) {
-                console.log("沒有檢察 title");
                 const errorMessage = "request 格式錯誤";
                 errorHandle(res, errorMessage);
             }
         });
-    } else if (req.method == "OPTIONS") {
-        res.writeHead(200, headers);
-        res.end();
     } else {
-        const errorMessage = "查無此路由，滾蛋";
+        // ============================================
+        // 400
+        // ============================================
+        const errorMessage = "查無此路由，BYE~";
         errorHandle(res, errorMessage);
     }
 };
